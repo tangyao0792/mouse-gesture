@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+
+<script type="text/javascript" src={{static_url("jquery.min.js")}}></script>
+
+<body>
+
+<canvas id="myCanvas" width="500" height="500" style="border:1px solid #c3c3c3;">
+Your browser does not support the canvas element.
+</canvas>
+
+<script type="text/javascript">
+
+var c=document.getElementById("myCanvas");
+var cxt=c.getContext("2d");
+var isPressed = false;
+var xArray;
+var yArray;
+
+c.onmousedown = initDrag;
+c.onmouseup = mouseUp;
+c.onmousemove = mouseMove;
+
+function initDrag(e)
+{
+    isPressed = true;
+    cxt.moveTo(e.clientX, e.clientY);
+
+    xArray = new Array();
+    yArray = new Array();
+
+    xArray.push(e.clientX);
+    yArray.push(e.clientY);
+}
+
+function mouseMove(e)
+{
+    if (isPressed)
+    {
+        cxt.lineTo(e.clientX, e.clientY);
+
+        xArray.push(e.clientX);
+        yArray.push(e.clientY);
+
+        cxt.stroke();
+    }
+}
+
+function mouseUp(e)
+{
+    isPressed = false;
+    var dataX = ''
+    var dataY = ''
+    for (var i = 0; i < xArray.length; i++)
+    {
+        dataX = dataX + xArray[i] + ',';
+        dataY = dataY + yArray[i] + ',';
+    }
+    jQuery.ajax
+    (
+        {
+            url: "/mouse",
+            data:
+            {
+                dataX: dataX,
+                dataY: dataY
+            },
+            type: "post",
+            datatype: "json",
+            success: function(data, status, xhr)
+            {
+                alert(data);
+            }
+        }
+    );
+}
+
+
+</script>
+
+</body>
+</html>
+
